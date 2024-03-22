@@ -117,17 +117,13 @@ export default function NavBar() {
             </Button>
           )}
           {status === "authenticated" && (
-            <Button variant="contained" color="warning" onClick={handleLogout}>
+            <Button variant="contained" color="error" onClick={handleLogout}>
               Logout
             </Button>
           )}
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
         </Toolbar>
       </AppBar>
+
       <Drawer variant="permanent" open={open}>
         <Toolbar
           sx={{
