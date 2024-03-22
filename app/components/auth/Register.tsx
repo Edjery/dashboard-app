@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import IRegisterValues from "./IRegisterValues";
 
 const Register = () => {
-  const router = useRouter();
   const initialValues: IRegisterValues = {
     name: "",
     email: "",
