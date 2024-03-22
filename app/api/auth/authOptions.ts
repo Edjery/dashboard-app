@@ -33,12 +33,11 @@ export const authOptions: NextAuthOptions = {
 
         if (!user) return null;
 
-        // const passwordsMatch = await bcrypt.compare(
-        //   credentials.password,
-        //   user.password!
-        // );
-        // console.log("passwordsMatc:h", passwordsMatch);
-        console.log("user:h", user);
+        const passwordsMatch = await bcrypt.compare(
+          credentials.password,
+          user.password!
+        );
+        if (!passwordsMatch) return null;
 
         return user ? user : null;
       },

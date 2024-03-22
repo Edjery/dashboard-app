@@ -1,6 +1,7 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { Button } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Badge from "@mui/material/Badge";
 import Divider from "@mui/material/Divider";
@@ -10,6 +11,7 @@ import List from "@mui/material/List";
 import { styled } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { signIn, signOut, useSession } from "next-auth/react";
 import * as React from "react";
 import { mainListItems, secondaryListItems } from "./listItems";
 
@@ -69,6 +71,17 @@ export default function NavBar() {
     setOpen(!open);
   };
 
+  const { status } = useSession();
+  console.log(status);
+
+  const handleLogin = () => {
+    signIn();
+    console.log(status);
+  };
+  const handleLogout = () => {
+    signOut();
+    console.log(status);
+  };
   return (
     <>
       <AppBar position="absolute" open={open}>
@@ -98,6 +111,16 @@ export default function NavBar() {
           >
             Dashboard
           </Typography>
+          {status === "unauthenticated" && (
+            <Button variant="contained" color="success" onClick={handleLogin}>
+              Login
+            </Button>
+          )}
+          {status === "authenticated" && (
+            <Button variant="contained" color="warning" onClick={handleLogout}>
+              Logout
+            </Button>
+          )}
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
               <NotificationsIcon />
