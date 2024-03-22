@@ -1,7 +1,5 @@
 "use client";
 
-import UserSchema from "@/app/api/register/UserSchema";
-import axiosInstance from "@/app/services/apiClient";
 import {
   Box,
   Button,
@@ -12,44 +10,37 @@ import {
   Typography,
 } from "@mui/material";
 import { Field, Form, Formik } from "formik";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import IRegisterValues from "./IRegisterValues";
+import ILoginValues from "./ILoginValues";
+import LoginSchema from "./LoginSchema";
 
-const Register = () => {
-  const router = useRouter();
-  const initialValues: IRegisterValues = {
-    name: "",
+const Login = () => {
+  const initialValues: ILoginValues = {
     email: "",
     password: "",
   };
 
-  const handleSubmit = async (values: IRegisterValues) => {
+  const handleSubmit = async (values: ILoginValues) => {
     console.log("Submitting...");
-    try {
-      const response = await axiosInstance.post("/register", values);
-      console.log("Registration successful:", response.data);
-      signIn("credentials", {
-        email: values.email,
-        password: values.password,
+    signIn("credentials", {
+      email: values.email,
+      password: values.password,
+    })
+      .then((response) => {
+        console.log("Sign in successful:", response);
       })
-        .then((response) => {
-          console.log("Sign in successful:", response);
-        })
-        .catch((error) => {
-          console.error("Sign in failed:", error);
-        });
-    } catch (error) {
-      console.error("Registration failed:", error);
-    }
+      .catch((error) => {
+        console.error("Sign in failed:", error);
+      });
   };
   return (
     <Box maxWidth="500px" m="auto">
       <Toolbar />
       <Formik
         initialValues={initialValues}
-        validationSchema={UserSchema}
-        onSubmit={(values: IRegisterValues) => {
+        validationSchema={LoginSchema}
+        onSubmit={(values: ILoginValues) => {
           console.log(values);
           handleSubmit(values);
         }}
@@ -58,20 +49,8 @@ const Register = () => {
           <Form>
             <Stack spacing={2}>
               <Typography variant="h4" fontWeight="bold" textAlign="center">
-                Create Account
+                Sign in Account
               </Typography>
-
-              <FormControl>
-                <Field
-                  as={TextField}
-                  type="text"
-                  name="name"
-                  label="Name"
-                  variant="outlined"
-                  error={errors.name && touched.name}
-                  helperText={errors.name && touched.name ? errors.name : ""}
-                />
-              </FormControl>
               <FormControl>
                 <Field
                   as={TextField}
@@ -96,7 +75,7 @@ const Register = () => {
                   }
                 />
               </FormControl>
-              <Button type="submit">Register</Button>
+              <Button type="submit">Login</Button>
             </Stack>
           </Form>
         )}
@@ -105,4 +84,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

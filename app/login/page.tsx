@@ -1,14 +1,16 @@
-import { redirect } from "next/navigation";
-import Register from "../components/auth/Register";
 import { getServerSession } from "next-auth";
+import Login from "../components/auth/Login";
 import { authOptions } from "../api/auth/authOptions";
+import { redirect } from "next/navigation";
 
-export default async function Home() {
+const page = async () => {
   const session = await getServerSession(authOptions);
   console.log(session);
   if (session) {
     redirect("/");
   }
 
-  return <Register />;
-}
+  return <Login />;
+};
+
+export default page;

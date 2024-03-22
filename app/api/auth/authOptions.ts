@@ -26,7 +26,6 @@ export const authOptions: NextAuthOptions = {
         credentials: Record<"email" | "password", string> | undefined
       ): Promise<any> {
         if (!credentials?.email || !credentials.password) return null;
-
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
@@ -35,15 +34,18 @@ export const authOptions: NextAuthOptions = {
 
         const passwordsMatch = await bcrypt.compare(
           credentials.password,
-          user.password!
+          user.password
         );
         if (!passwordsMatch) return null;
-
         return user ? user : null;
       },
     }),
   ],
+  secret: "qwfetryuiuikjhf",
   session: {
     strategy: "jwt",
+  },
+  pages: {
+    signIn: "/login",
   },
 };
