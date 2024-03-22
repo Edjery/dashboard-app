@@ -4,14 +4,14 @@ import {
   Box,
   Button,
   FormControl,
+  Link,
   Stack,
   TextField,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { Field, Form, Formik } from "formik";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import ILoginValues from "./ILoginValues";
 import LoginSchema from "./LoginSchema";
 
@@ -75,11 +75,18 @@ const Login = () => {
                   }
                 />
               </FormControl>
-              <Button type="submit">Login</Button>
+              <Button type="submit" variant="contained">
+                Login
+              </Button>
             </Stack>
           </Form>
         )}
       </Formik>
+      <Link href="/register" underline="none">
+        <Typography marginTop="10px" textAlign="right">
+          Don't have an account? Sign Up!
+        </Typography>
+      </Link>
     </Box>
   );
 };

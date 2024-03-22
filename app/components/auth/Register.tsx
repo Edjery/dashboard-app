@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   FormControl,
+  Link,
   Stack,
   TextField,
   Toolbar,
@@ -13,10 +14,11 @@ import {
 } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import IRegisterValues from "./IRegisterValues";
+import { useRouter } from "next/navigation";
 
 const Register = () => {
+  const router = useRouter();
   const initialValues: IRegisterValues = {
     name: "",
     email: "",
@@ -34,6 +36,7 @@ const Register = () => {
       })
         .then((response) => {
           console.log("Sign in successful:", response);
+          router.push("/");
         })
         .catch((error) => {
           console.error("Sign in failed:", error);
@@ -95,11 +98,18 @@ const Register = () => {
                   }
                 />
               </FormControl>
-              <Button type="submit">Register</Button>
+              <Button type="submit" variant="contained">
+                Register
+              </Button>
             </Stack>
           </Form>
         )}
       </Formik>
+      <Link href="/login" underline="none">
+        <Typography marginTop="10px" textAlign="right">
+          Already have an account? Sign In!
+        </Typography>
+      </Link>
     </Box>
   );
 };
