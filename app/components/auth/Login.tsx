@@ -17,7 +17,7 @@ import { ToastContainer } from "react-toastify";
 import LoadingButton from "../LoadingButton";
 import popUpError from "../popUpError";
 import ILoginValues from "./ILoginValues";
-import LoginSchema from "./LoginSchema";
+import loginSchema from "../../schema/loginSchema";
 
 const Login = () => {
   const router = useRouter();
@@ -54,7 +54,7 @@ const Login = () => {
       <Toolbar />
       <Formik
         initialValues={initialValues}
-        validationSchema={LoginSchema}
+        validationSchema={loginSchema}
         onSubmit={(values: ILoginValues) => {
           handleSubmit(values);
         }}

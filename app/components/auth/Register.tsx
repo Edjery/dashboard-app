@@ -1,6 +1,6 @@
 "use client";
 
-import RegisterSchema from "@/app/api/register/RegisterSchema";
+import registerSchema from "@/app/schema/registerSchema";
 import axiosInstance from "@/app/services/apiClient";
 import {
   Box,
@@ -67,7 +67,7 @@ const Register = () => {
       <Toolbar />
       <Formik
         initialValues={initialValues}
-        validationSchema={RegisterSchema}
+        validationSchema={registerSchema}
         onSubmit={(values: IRegisterValues) => {
           handleSubmit(values);
         }}
