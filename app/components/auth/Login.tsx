@@ -1,4 +1,6 @@
 "use client";
+import { Bounce, toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import {
   Box,
@@ -12,6 +14,7 @@ import {
 } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import ILoginValues from "./ILoginValues";
 import LoginSchema from "./LoginSchema";
 
@@ -20,22 +23,40 @@ const Login = () => {
     email: "",
     password: "",
   };
+  const router = useRouter();
 
   const handleSubmit = async (values: ILoginValues) => {
     console.log("Submitting...");
-    signIn("credentials", {
+    const res = await signIn("credentials", {
       email: values.email,
       password: values.password,
-    })
-      .then((response) => {
-        console.log("Sign in successful:", response);
-      })
-      .catch((error) => {
-        console.error("Sign in failed:", error);
-      });
+      redirect: false,
+    }).then((response) => {
+      console.log("Sign in successful:", response);
+
+      if (response?.error) {
+        console.log("Incorrect credentials, please try again");
+
+        toast.error("Incorrect credentials, please try again", {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+      } else {
+        router.push("/");
+      }
+    });
+    console.log(res);
   };
   return (
     <Box maxWidth="500px" m="auto">
+      <ToastContainer />
       <Toolbar />
       <Formik
         initialValues={initialValues}
@@ -84,7 +105,7 @@ const Login = () => {
       </Formik>
       <Link href="/register" underline="none">
         <Typography marginTop="10px" textAlign="right">
-          Don't have an account? Sign Up!
+          {`Don't have an account? Sign Up!`}
         </Typography>
       </Link>
     </Box>

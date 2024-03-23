@@ -16,6 +16,7 @@ import { Field, Form, Formik } from "formik";
 import { signIn } from "next-auth/react";
 import IRegisterValues from "./IRegisterValues";
 import { useRouter } from "next/navigation";
+import { ToastContainer } from "react-toastify";
 
 const Register = () => {
   const router = useRouter();
@@ -47,6 +48,7 @@ const Register = () => {
   };
   return (
     <Box maxWidth="500px" m="auto">
+      <ToastContainer />
       <Toolbar />
       <Formik
         initialValues={initialValues}
