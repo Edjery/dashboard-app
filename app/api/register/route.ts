@@ -2,39 +2,57 @@
 
 import prisma from "@/prisma/client";
 import bcrypt from "bcrypt";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import UserSchema from "./UserSchema";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    try {
-      await UserSchema.validate(body);
-    } catch (error) {
-      return new Response(JSON.stringify({ error: error }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
+    const validation = await UserSchema.validate(body)
+      .then((valid) => {
+        return valid;
+      })
+      .catch((error) => {
+        return error;
       });
-    }
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email: body.email },
-    });
-    if (existingUser) {
-      return new Response(JSON.stringify({ error: "User already exists" }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
+    if (validation.errors)
+      return NextResponse.json(
+        { error: validation.errors },
+        {
+          status: 403,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+    const user = await prisma.user
+      .findUniqueOrThrow({
+        where: { email: body.email },
+      })
+      .then(() => {
+        return "User already exists!";
+      })
+      .catch(() => {
+        return null;
       });
+
+    if (user) {
+      return NextResponse.json(
+        { error: user },
+        {
+          status: 403,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
     }
 
     const hashedPassword = await bcrypt.hash(body.password, 10);
 
-    // Create the user
     const newUser = await prisma.user.create({
       data: {
         name: body.name,
@@ -43,18 +61,24 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return new Response(JSON.stringify({ email: newUser.email }), {
-      status: 201,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return NextResponse.json(
+      { success: "User successfully created", data: newUser },
+      {
+        status: 201,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 }
