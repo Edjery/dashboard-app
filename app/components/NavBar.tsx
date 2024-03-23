@@ -1,6 +1,13 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Button } from "@mui/material";
+import SettingsIcon from "@mui/icons-material/Settings";
+import {
+  Button,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Divider from "@mui/material/Divider";
 import MuiDrawer from "@mui/material/Drawer";
@@ -10,6 +17,7 @@ import { styled } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import { mainListItems, secondaryListItems } from "./listItems";
 
@@ -64,21 +72,18 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function NavBar() {
+  const { status, data } = useSession();
+  const router = useRouter();
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
-  const { status } = useSession();
-  console.log(status);
-
   const handleLogin = () => {
     signIn();
-    console.log(status);
   };
   const handleLogout = () => {
     signOut();
-    console.log(status);
   };
   return (
     <>
@@ -127,19 +132,48 @@ export default function NavBar() {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
             px: [1],
           }}
         >
-          <IconButton onClick={toggleDrawer}>
+          {data !== null && data?.user ? (
+            <Typography overflow="hidden">Welcome! {data.user.name}</Typography>
+          ) : (
+            <Typography overflow="hidden">Welcome guest!</Typography>
+          )}
+
+          <IconButton
+            onClick={toggleDrawer}
+            sx={{ display: "flex", justifyContent: "flex-end" }}
+          >
             <ChevronLeftIcon />
           </IconButton>
         </Toolbar>
         <Divider />
         <List component="nav">
+          <ListItemButton>
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Dashboard"
+              onClick={() => router.push("/")}
+            />
+          </ListItemButton>
           {mainListItems}
           <Divider sx={{ my: 1 }} />
           {secondaryListItems}
+          {status === "authenticated" ? (
+            <ListItemButton>
+              <ListItemIcon>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary="Settings"
+                onClick={() => router.push("/settings")}
+              />
+            </ListItemButton>
+          ) : null}
         </List>
       </Drawer>
     </>
