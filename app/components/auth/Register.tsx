@@ -18,7 +18,7 @@ import { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import LoadingButton from "../LoadingButton";
 import popUpError from "../popUpError";
-import IRegisterValues from "./IRegisterValues";
+import IRegisterValues from "./interface/IRegisterValues";
 
 const Register = () => {
   const router = useRouter();

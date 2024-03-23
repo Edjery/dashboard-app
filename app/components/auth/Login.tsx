@@ -14,10 +14,10 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ToastContainer } from "react-toastify";
+import loginSchema from "../../schema/loginSchema";
 import LoadingButton from "../LoadingButton";
 import popUpError from "../popUpError";
-import ILoginValues from "./ILoginValues";
-import loginSchema from "../../schema/loginSchema";
+import ILoginValues from "./interface/ILoginValues";
 
 const Login = () => {
   const router = useRouter();
