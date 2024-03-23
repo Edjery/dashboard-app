@@ -41,7 +41,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  secret: "qwfetryuiuikjhf",
+  secret: "qwertyuiopasdfghjklzxcvbnm",
   session: {
     strategy: "jwt",
   },
