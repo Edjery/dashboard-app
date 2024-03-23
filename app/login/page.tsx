@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
-import Login from "../components/auth/Login";
-import { authOptions } from "../api/auth/authOptions";
 import { redirect } from "next/navigation";
+import { authOptions } from "../api/auth/authOptions";
+import Login from "../components/auth/Login";
 
-const page = async () => {
+export default async function Home() {
   const session = await getServerSession(authOptions);
   console.log(session);
   if (session) {
@@ -11,6 +11,4 @@ const page = async () => {
   }
 
   return <Login />;
-};
-
-export default page;
+}
