@@ -3,13 +3,13 @@
 import prisma from "@/prisma/client";
 import bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
-import UserSchema from "./UserSchema";
+import RegisterSchema from "./RegisterSchema";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const validation = await UserSchema.validate(body)
+    const validation = await RegisterSchema.validate(body)
       .then((valid) => {
         return valid;
       })

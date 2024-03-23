@@ -1,10 +1,9 @@
 "use client";
 
-import UserSchema from "@/app/api/register/UserSchema";
+import RegisterSchema from "@/app/api/register/RegisterSchema";
 import axiosInstance from "@/app/services/apiClient";
 import {
   Box,
-  Button,
   FormControl,
   Link,
   Stack,
@@ -14,12 +13,16 @@ import {
 } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { signIn } from "next-auth/react";
-import IRegisterValues from "./IRegisterValues";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { ToastContainer } from "react-toastify";
+import LoadingButton from "../LoadingButton";
+import popUpError from "../popUpError";
+import IRegisterValues from "./IRegisterValues";
 
 const Register = () => {
   const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
   const initialValues: IRegisterValues = {
     name: "",
     email: "",
@@ -27,24 +30,36 @@ const Register = () => {
   };
 
   const handleSubmit = async (values: IRegisterValues) => {
+    setSubmitting(true);
     console.log("Submitting...");
-    try {
-      const response = await axiosInstance.post("/register", values);
-      console.log("Registration successful:", response.data);
-      signIn("credentials", {
+    const response = await axiosInstance.post("/register", values);
+
+    if (response.status === 201) {
+      const res = await signIn("credentials", {
         email: values.email,
         password: values.password,
+        redirect: false,
       })
         .then((response) => {
-          console.log("Sign in successful:", response);
-          router.push("/");
+          if (response?.error) {
+            console.log(response);
+            popUpError("Incorrect credentials, please try again");
+          } else {
+            return true;
+          }
         })
         .catch((error) => {
+          popUpError("Sign in failed");
           console.error("Sign in failed:", error);
+          return false;
         });
-    } catch (error) {
-      console.error("Registration failed:", error);
+
+      if (res) {
+        router.push("/");
+      }
     }
+
+    setSubmitting(false);
   };
   return (
     <Box maxWidth="500px" m="auto">
@@ -52,9 +67,8 @@ const Register = () => {
       <Toolbar />
       <Formik
         initialValues={initialValues}
-        validationSchema={UserSchema}
+        validationSchema={RegisterSchema}
         onSubmit={(values: IRegisterValues) => {
-          console.log(values);
           handleSubmit(values);
         }}
       >
@@ -100,9 +114,7 @@ const Register = () => {
                   }
                 />
               </FormControl>
-              <Button type="submit" variant="contained">
-                Register
-              </Button>
+              <LoadingButton isSubmitting={submitting} buttonText="Register" />
             </Stack>
           </Form>
         )}

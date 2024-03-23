@@ -1,10 +1,7 @@
 "use client";
-import { Bounce, toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 import {
   Box,
-  Button,
   FormControl,
   Link,
   Stack,
@@ -15,44 +12,41 @@ import {
 import { Field, Form, Formik } from "formik";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ToastContainer } from "react-toastify";
+import LoadingButton from "../LoadingButton";
+import popUpError from "../popUpError";
 import ILoginValues from "./ILoginValues";
 import LoginSchema from "./LoginSchema";
 
 const Login = () => {
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
   const initialValues: ILoginValues = {
     email: "",
     password: "",
   };
-  const router = useRouter();
 
   const handleSubmit = async (values: ILoginValues) => {
+    setSubmitting(true);
     console.log("Submitting...");
-    const res = await signIn("credentials", {
+    await signIn("credentials", {
       email: values.email,
       password: values.password,
       redirect: false,
-    }).then((response) => {
-      console.log("Sign in successful:", response);
-
-      if (response?.error) {
-        console.log("Incorrect credentials, please try again");
-
-        toast.error("Incorrect credentials, please try again", {
-          position: "bottom-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
-      } else {
-        router.push("/");
-      }
-    });
-    console.log(res);
+    })
+      .then((response) => {
+        if (response?.error) {
+          popUpError("Incorrect credentials, please try again");
+        } else {
+          router.push("/");
+        }
+      })
+      .catch((error) => {
+        popUpError("Sign in failed");
+        console.error("Sign in failed:", error);
+      });
+    setSubmitting(false);
   };
   return (
     <Box maxWidth="500px" m="auto">
@@ -62,7 +56,6 @@ const Login = () => {
         initialValues={initialValues}
         validationSchema={LoginSchema}
         onSubmit={(values: ILoginValues) => {
-          console.log(values);
           handleSubmit(values);
         }}
       >
@@ -96,9 +89,7 @@ const Login = () => {
                   }
                 />
               </FormControl>
-              <Button type="submit" variant="contained">
-                Login
-              </Button>
+              <LoadingButton isSubmitting={submitting} buttonText="Login" />
             </Stack>
           </Form>
         )}
